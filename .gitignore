@@ -1,0 +1,76 @@
+# .NET Build outputs
+bin/
+obj/
+out/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+.nuget/
+project.lock.json
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.userprefs
+*.rsuser
+*.DotSettings.user
+
+# Visual Studio
+.vs/
+*.sln.docstates
+*.aps
+
+# VS Code (personal settings only; .vscode/mcp.json should be committed)
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/.ropeproject
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+appsettings.Local.json
+*.pfx
+*.p12
+*.key
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Test results
+TestResults/
+*.trx
+*.coveragexml
+coverage/
+coverage-report/
+
+# Logs
+*.log
+logs/
+
+# Publish output
+publish/
+artifacts/
+
+Task/**
+.vscode/mcp.json

@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AzureDevOpsMcp</RootNamespace>
+    <!-- NuGet Package 資訊 -->
+    <PackageId>AzureDevOpsMcp</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>Lawrence Shen</Authors>
+    <Description>A .NET 10 MCP Server for Azure DevOps, supporting 29 tools across 5 domains with STDIO and HTTP transport modes.</Description>
+    <PackageTags>mcp;azure-devops;ado;modelcontextprotocol;ai</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/lawrence8358/AzureDevOpsMcp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/lawrence8358/AzureDevOpsMcp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <!-- 發布為 dotnet tool -->
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>azure-devops-mcp</ToolCommandName>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="server.json" Pack="true" PackagePath=".mcp/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" Version="1.2.0" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="1.2.0" />
+  </ItemGroup>
+
+</Project>

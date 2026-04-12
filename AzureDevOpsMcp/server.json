@@ -1,0 +1,60 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "description": "Azure DevOps MCP Server - 支援 29 個 Azure DevOps 工具，分為 Core、Work Items、Git、Pull Requests、Builds、Work 六個 Domain。",
+  "name": "azure-devops-mcp",
+  "version": "1.0.1",
+  "packages": [
+    {
+      "registryType": "nuget",
+      "registryBaseUrl": "https://api.nuget.org",
+      "identifier": "AzureDevOpsMcp",
+      "version": "1.0.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "name": "--domains",
+          "description": "選擇要載入的工具 Domain（可多選，空白分隔）：core, work-items, git, pull-requests, builds, work。未指定則載入全部。",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "ADO_ORG",
+          "value": "{ado_org}",
+          "variables": {
+            "ado_org": {
+              "description": "Azure DevOps 組織 URL，例如 https://dev.azure.com/myorg 或 https://tfs.company.com/DefaultCollection",
+              "isRequired": true,
+              "isSecret": false
+            }
+          }
+        },
+        {
+          "name": "ADO_PAT",
+          "value": "{ado_pat}",
+          "variables": {
+            "ado_pat": {
+              "description": "Azure DevOps Personal Access Token（PAT）",
+              "isRequired": true,
+              "isSecret": true
+            }
+          }
+        },
+        {
+          "name": "ADO_PROJECT",
+          "value": "{ado_project}",
+          "variables": {
+            "ado_project": {
+              "description": "預設專案名稱（可選），設定後所有工具自動使用此專案",
+              "isRequired": false,
+              "isSecret": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
