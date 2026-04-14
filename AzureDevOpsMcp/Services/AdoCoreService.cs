@@ -1,5 +1,4 @@
 using System.Text.Json;
-using AzureDevOpsMcp.Configuration;
 
 namespace AzureDevOpsMcp.Services;
 
@@ -9,7 +8,6 @@ public class AdoCoreService : IAdoCoreService
     #region Members
 
     private readonly HttpClient _httpClient;
-    private readonly AdoOptions _options;
 
     #endregion
 
@@ -17,11 +15,9 @@ public class AdoCoreService : IAdoCoreService
 
     /// <summary>初始化 <see cref="AdoCoreService"/> 的新執行個體。</summary>
     /// <param name="httpClientFactory">用於建立 HTTP 用戶端的工廠。</param>
-    /// <param name="options">Azure DevOps 連線設定選項。</param>
-    public AdoCoreService(IHttpClientFactory httpClientFactory, AdoOptions options)
+    public AdoCoreService(IHttpClientFactory httpClientFactory)
     {
         _httpClient = httpClientFactory.CreateClient("AzureDevOps");
-        _options = options;
     }
 
     #endregion

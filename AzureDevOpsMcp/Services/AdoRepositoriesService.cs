@@ -50,20 +50,55 @@ public class AdoRepositoriesService : IAdoRepositoriesService
         return await ParseResponseAsync(response);
     }
 
-    /// <summary>取得儲存庫中指定路徑的檔案或目錄內容。</summary>
+    /// <summary>取得儲存庫中指定路徑的檔案或目錄內容。若路徑為目錄，自動改以清單模式回傳。</summary>
     /// <param name="repositoryId">Git 儲存庫識別碼或名稱。</param>
     /// <param name="path">檔案或目錄路徑。</param>
     /// <param name="project">Azure DevOps 專案名稱。</param>
     /// <param name="branch">分支名稱。</param>
     public async Task<JsonElement> GetItemAsync(string repositoryId, string path, string project, string? branch = null)
     {
-        var query = new List<string> { "api-version=7.1", $"path={Uri.EscapeDataString(path)}", "includeContent=true" };
-        if (branch != null) query.Add($"versionDescriptor.version={Uri.EscapeDataString(branch)}&versionDescriptor.versionType=branch");
+        // 移除開頭斜線，Azure DevOps Server 的 items API 不接受帶前綴斜線的路徑
+        if (path.StartsWith("/")) path = path[1..];
 
-        var url = $"{Uri.EscapeDataString(project)}/_apis/git/repositories/{Uri.EscapeDataString(repositoryId)}/items?{string.Join("&", query)}";
-        var response = await _httpClient.GetAsync(url);
+        var versionQuery = new List<string> { "api-version=7.1" };
+        if (branch != null) versionQuery.Add($"versionDescriptor.version={Uri.EscapeDataString(NormalizeBranchName(branch))}&versionDescriptor.versionType=branch");
+        var repoSegment = $"{Uri.EscapeDataString(project)}/_apis/git/repositories/{Uri.EscapeDataString(repositoryId)}/items";
+
+        // First attempt: single item with content (works for blobs/files)
+        var fileQuery = new List<string>(versionQuery) { $"path={Uri.EscapeDataString(path)}", "includeContent=true" };
+        var fileUrl = $"{repoSegment}?{string.Join("&", fileQuery)}";
+        var response = await _httpClient.GetAsync(fileUrl);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var item = await ParseResponseAsync(response);
+            // ADO sometimes returns 200 with a "tree" object for directory paths instead of erroring.
+            // Detect this and fall through to the directory listing.
+            if (item.TryGetProperty("gitObjectType", out var objType) && objType.GetString() == "tree")
+                return await GetDirectoryListingAsync(repoSegment, path, versionQuery);
+            return item;
+        }
+
+        // ADO returns 500 for other directory paths with GitUnexpectedObjectTypeException
+        if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            if (body.Contains("GitUnexpectedObjectTypeException") || body.Contains("resolved to a Tree"))
+                return await GetDirectoryListingAsync(repoSegment, path, versionQuery);
+        }
+
         await response.EnsureSuccessWithBodyAsync();
-        return await ParseResponseAsync(response);
+        return await ParseResponseAsync(response); // unreachable, but satisfies compiler
+    }
+
+    private async Task<JsonElement> GetDirectoryListingAsync(string repoSegment, string path, List<string> versionQuery)
+    {
+        // Directory listing requires scopePath (not path) + recursionLevel
+        var dirQuery = new List<string>(versionQuery) { $"scopePath={Uri.EscapeDataString(path)}", "recursionLevel=OneLevel" };
+        var dirUrl = $"{repoSegment}?{string.Join("&", dirQuery)}";
+        var dirResponse = await _httpClient.GetAsync(dirUrl);
+        await dirResponse.EnsureSuccessWithBodyAsync();
+        return await ParseResponseAsync(dirResponse);
     }
 
     /// <summary>取得指定儲存庫的提交歷史記錄。</summary>
@@ -76,7 +111,7 @@ public class AdoRepositoriesService : IAdoRepositoriesService
     public async Task<JsonElement> GetCommitsAsync(string repositoryId, string project, string? branch = null, string? itemPath = null, string? author = null, int? top = null)
     {
         var query = new List<string> { "api-version=7.1" };
-        if (branch != null) query.Add($"searchCriteria.itemVersion.version={Uri.EscapeDataString(branch)}");
+        if (branch != null) query.Add($"searchCriteria.itemVersion.version={Uri.EscapeDataString(NormalizeBranchName(branch))}");
         if (itemPath != null) query.Add($"searchCriteria.itemPath={Uri.EscapeDataString(itemPath)}");
         if (author != null) query.Add($"searchCriteria.author={Uri.EscapeDataString(author)}");
         if (top != null) query.Add($"$top={top}");
@@ -227,6 +262,12 @@ public class AdoRepositoriesService : IAdoRepositoriesService
         using var doc = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         return doc.RootElement.Clone();
     }
+
+    /// <summary>正規化分支名稱，移除 refs/heads/ 前綴（Azure DevOps versionDescriptor.versionType=branch 不接受完整 ref 格式）。</summary>
+    private static string NormalizeBranchName(string branch)
+        => branch.StartsWith("refs/heads/", StringComparison.OrdinalIgnoreCase)
+            ? branch["refs/heads/".Length..]
+            : branch;
 
     #endregion
 }

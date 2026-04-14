@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Net;
 using AzureDevOpsMcp.Configuration;
 using AzureDevOpsMcp.Services;
 using ModelContextProtocol.Server;
@@ -26,7 +27,16 @@ public static class GetCommitsTool
     {
         var resolvedProject = project ?? adoOptions.Project
             ?? throw new ArgumentException("Project is required. Set ADO_PROJECT environment variable or provide the project parameter.");
-        var result = await reposService.GetCommitsAsync(repositoryId, resolvedProject, branch, itemPath, author, top);
-        return result.ToString();
+        try
+        {
+            var result = await reposService.GetCommitsAsync(repositoryId, resolvedProject, branch, itemPath, author, top);
+            return result.ToString();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound
+            && HttpResponseExtensions.TryGetAdoTypeKey(ex.Message) == "GitRepositoryNotFoundException")
+        {
+            return $"Repository '{repositoryId}' was not found in project '{resolvedProject}'. "
+                 + $"Use mcp_ado_git_list_repositories with project='{resolvedProject}' to see available repositories and get the correct name or ID.";
+        }
     }
 }
