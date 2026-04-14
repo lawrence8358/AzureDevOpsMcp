@@ -101,10 +101,10 @@ public static class ServiceCollectionExtensions
             .Where(kv => allDomains || domains.Contains(kv.Key))
             .SelectMany(kv => kv.Value);
 
-        // WithTools(IEnumerable<Type>, JsonSerializerOptions) を明示的に呼ぶ。
-        // JsonSerializerOptions を省略すると WithTools<T>(IMcpServerBuilder, T, JsonSerializerOptions?)
-        // の型推論で T = IEnumerable<Type> になり、IEnumerable 自体をツールクラスとして
-        // スキャンするため属性が見つからず tools/list ハンドラが登録されない。
+        // 明確呼叫 WithTools(IEnumerable<Type>, JsonSerializerOptions) 多載。
+        // 若省略 JsonSerializerOptions，將誤用 WithTools<T>(IMcpServerBuilder, T, JsonSerializerOptions?)
+        // 的型別推論，導致 T 被推論為 IEnumerable<Type>，將 IEnumerable 本身視為工具類別進行
+        // 掃描，因找不到屬性而無法正確註冊 tools/list 處理器。
         return builder.WithTools(toolTypes, (JsonSerializerOptions?)null);
     }
 

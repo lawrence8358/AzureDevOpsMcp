@@ -47,6 +47,8 @@ public class AdoWorkService : IAdoWorkService
     public async Task<JsonElement> GetIterationWorkItemsAsync(string project, string iterationId, string? team = null)
     {
         var teamSegment = team != null ? $"/{Uri.EscapeDataString(team)}" : string.Empty;
+        // 技術債：Iteration Work Items API 截至 2026-04 仍為 Preview 版本（7.1-preview.1）。
+        // 待 Microsoft 發布正式版本後升級。
         var url = $"{Uri.EscapeDataString(project)}{teamSegment}/_apis/work/teamsettings/iterations/{Uri.EscapeDataString(iterationId)}/workitems?api-version=7.1-preview.1";
         var response = await _httpClient.GetAsync(url);
         await response.EnsureSuccessWithBodyAsync();

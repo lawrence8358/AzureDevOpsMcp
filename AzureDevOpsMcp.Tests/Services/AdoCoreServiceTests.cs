@@ -20,7 +20,7 @@ public class AdoCoreServiceTests
         var httpClient = new HttpClient(handler) { BaseAddress = new Uri(_options.ServerUrl.TrimEnd('/') + "/") };
         var factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient("AzureDevOps").Returns(httpClient);
-        return (new AdoCoreService(factory, _options), handler);
+        return (new AdoCoreService(factory), handler);
     }
 
     [Fact(DisplayName = "列出所有專案 - 呼叫正確的 API 端點")]

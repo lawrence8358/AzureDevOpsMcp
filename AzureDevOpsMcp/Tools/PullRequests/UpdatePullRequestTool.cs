@@ -26,6 +26,8 @@ public static class UpdatePullRequestTool
     {
         var resolvedProject = project ?? adoOptions.Project
             ?? throw new ArgumentException("Project is required. Set ADO_PROJECT environment variable or provide the project parameter.");
+        if (status == null && title == null && description == null)
+            throw new ArgumentException("At least one of status, title, or description must be provided.");
         var result = await reposService.UpdatePullRequestAsync(repositoryId, pullRequestId, resolvedProject, status, title, description);
         return result.ToString();
     }

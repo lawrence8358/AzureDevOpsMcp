@@ -113,8 +113,7 @@ public class AdoBuildsService : IAdoBuildsService
         if (logId != null)
         {
             var text = await response.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(JsonSerializer.Serialize(new { value = text }));
-            return doc.RootElement.Clone();
+            return JsonSerializer.SerializeToElement(new { value = text });
         }
 
         return await ParseResponseAsync(response);

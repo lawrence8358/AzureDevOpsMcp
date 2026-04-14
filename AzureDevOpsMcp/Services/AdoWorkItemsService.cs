@@ -104,6 +104,14 @@ public class AdoWorkItemsService : IAdoWorkItemsService
         var url = $"_apis/wit/workitems/{id}?api-version=7.1&destroy={destroy.ToString().ToLowerInvariant()}";
         var response = await _httpClient.DeleteAsync(url);
         await response.EnsureSuccessWithBodyAsync();
+
+        // destroy=true returns 204 No Content with an empty body; soft delete returns 200 with JSON
+        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+        {
+            using var doc = JsonDocument.Parse($"{{\"deleted\":true,\"id\":{id},\"permanent\":true}}");
+            return doc.RootElement.Clone();
+        }
+
         return await ParseResponseAsync(response);
     }
 
@@ -134,6 +142,8 @@ public class AdoWorkItemsService : IAdoWorkItemsService
         var body = JsonSerializer.Serialize(new { text });
         var content = new StringContent(body, Encoding.UTF8, "application/json");
 
+        // 技術債：Work Item Comments API 截至 2026-04 仍為 Preview 版本（7.1-preview.4）。
+        // 待 Microsoft 發布正式版本後升級。
         var url = $"{Uri.EscapeDataString(project)}/_apis/wit/workitems/{workItemId}/comments?api-version=7.1-preview.4";
         var response = await _httpClient.PostAsync(url, content);
         await response.EnsureSuccessWithBodyAsync();
@@ -146,6 +156,8 @@ public class AdoWorkItemsService : IAdoWorkItemsService
     /// <param name="top">最多回傳筆數。</param>
     public async Task<JsonElement> GetCommentsAsync(string project, int workItemId, int? top = null)
     {
+        // 技術債：Work Item Comments API 截至 2026-04 仍為 Preview 版本（7.1-preview.4）。
+        // 待 Microsoft 發布正式版本後升級。
         var query = new List<string> { "api-version=7.1-preview.4" };
         if (top != null) query.Add($"$top={top}");
 

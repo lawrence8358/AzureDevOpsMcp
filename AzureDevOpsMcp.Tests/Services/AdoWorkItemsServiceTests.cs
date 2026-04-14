@@ -105,20 +105,37 @@ public class AdoWorkItemsServiceTests
         Assert.Contains("$top=10", url);
     }
 
-    [Fact(DisplayName = "刪除工作項目 - 使用 DELETE 方法")]
+    [Fact(DisplayName = "刪除工作項目（軟刪除）- 使用 DELETE 方法並回傳 JSON")]
     public async Task DeleteWorkItemAsync_UsesDeleteMethod()
     {
         // Arrange
         var (service, handler) = CreateService("""{"id":42}""");
 
         // Act
-        await service.DeleteWorkItemAsync(42, destroy: true);
+        var result = await service.DeleteWorkItemAsync(42, destroy: false);
 
         // Assert
         Assert.Equal(HttpMethod.Delete, handler.LastRequest!.Method);
         var url = handler.LastRequest.RequestUri!.ToString();
         Assert.Contains("_apis/wit/workitems/42", url);
-        Assert.Contains("destroy=true", url);
+        Assert.Contains("destroy=false", url);
+        Assert.Equal(42, result.GetProperty("id").GetInt32());
+    }
+
+    [Fact(DisplayName = "永久刪除工作項目 - API 回傳 204 時應合成刪除確認 JSON")]
+    public async Task DeleteWorkItemAsync_HandlesNoContent_WhenDestroyed()
+    {
+        // Arrange
+        var handler = new MockHttpMessageHandler(_ => new HttpResponseMessage(System.Net.HttpStatusCode.NoContent));
+        var (service, _) = CreateService(handler);
+
+        // Act
+        var result = await service.DeleteWorkItemAsync(42, destroy: true);
+
+        // Assert
+        Assert.True(result.GetProperty("deleted").GetBoolean());
+        Assert.True(result.GetProperty("permanent").GetBoolean());
+        Assert.Equal(42, result.GetProperty("id").GetInt32());
     }
 
     [Fact(DisplayName = "批次取得工作項目 - 以 POST 傳送 ID 清單至正確端點")]
