@@ -104,6 +104,11 @@ public class AdoWorkItemsService : IAdoWorkItemsService
         var url = $"_apis/wit/workitems/{id}?api-version=7.1&destroy={destroy.ToString().ToLowerInvariant()}";
         var response = await _httpClient.DeleteAsync(url);
         await response.EnsureSuccessWithBodyAsync();
+
+        // destroy=true returns 204 No Content with an empty body; soft delete returns 200 with JSON
+        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            return JsonDocument.Parse($"{{\"deleted\":true,\"id\":{id},\"permanent\":true}}").RootElement.Clone();
+
         return await ParseResponseAsync(response);
     }
 

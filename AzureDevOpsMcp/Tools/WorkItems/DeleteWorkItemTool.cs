@@ -19,6 +19,8 @@ public static class DeleteWorkItemTool
         [Description("Permanently delete (true) or move to recycle bin (false)")] bool destroy = false)
     {
         var result = await workItemsService.DeleteWorkItemAsync(id, destroy);
+        if (destroy && result.TryGetProperty("permanent", out var permanent) && permanent.GetBoolean())
+            return $"Work item {id} has been permanently deleted.";
         return result.ToString();
     }
 }

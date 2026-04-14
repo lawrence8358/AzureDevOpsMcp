@@ -8,7 +8,7 @@
     <RootNamespace>AzureDevOpsMcp</RootNamespace>
     <!-- NuGet Package 資訊 -->
     <PackageId>AzureDevOpsMcp</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Lawrence Shen</Authors>
     <Description>A .NET 10 MCP Server for Azure DevOps, supporting 29 tools across 5 domains with STDIO and HTTP transport modes.</Description>
     <PackageTags>mcp;azure-devops;ado;modelcontextprotocol;ai</PackageTags>
