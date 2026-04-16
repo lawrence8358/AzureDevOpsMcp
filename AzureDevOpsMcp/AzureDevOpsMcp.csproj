@@ -8,7 +8,7 @@
     <RootNamespace>AzureDevOpsMcp</RootNamespace>
     <!-- NuGet Package 資訊 -->
     <PackageId>AzureDevOpsMcp</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Lawrence Shen</Authors>
     <Description>A .NET 10 MCP Server for Azure DevOps, supporting 29 tools across 5 domains with STDIO and HTTP transport modes.</Description>
     <PackageTags>mcp;azure-devops;ado;modelcontextprotocol;ai</PackageTags>
@@ -20,8 +20,7 @@
     <!-- 發布為 dotnet tool -->
     <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>azure-devops-mcp</ToolCommandName>
-    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+    <ToolCommandName>azure-devops-mcp</ToolCommandName> 
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,7 +5,7 @@
 ![.NET 10.0](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 [![NuGet](https://img.shields.io/nuget/v/AzureDevOpsMcp?logo=nuget&label=NuGet)](https://www.nuget.org/packages/AzureDevOpsMcp)
-[![Build status](https://primeeagle.visualstudio.com/PrimeEagleX/_apis/build/status/GitHub/Nuget%20-%20AzureDevOpsMcp)](https://primeeagle.visualstudio.com/PrimeEagleX/_build/latest?definitionId=90)
+[![Build status](https://dev.azure.com/primeeagle/PrimeEagleX/_apis/build/status/GitHub/Nuget%20-%20AzureDevOpsMcp)](https://dev.azure.com/primeeagle/PrimeEagleX/_build/latest?definitionId=90)
 
 基於 .NET 10 建置的 Azure DevOps MCP Server，提供 **29 個工具**，涵蓋專案管理、工作項目（讀取/寫入分離）、Git 操作、Pull Request 審查、CI/CD Pipeline 及 Sprint 規劃，可透過 STDIO 或 HTTP (SSE) 模式與 AI 助手（如 GitHub Copilot、Claude）整合使用。
 

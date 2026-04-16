@@ -5,7 +5,7 @@
 ![.NET 10.0](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 [![NuGet](https://img.shields.io/nuget/v/AzureDevOpsMcp?logo=nuget&label=NuGet)](https://www.nuget.org/packages/AzureDevOpsMcp)
-[![Build status](https://primeeagle.visualstudio.com/PrimeEagleX/_apis/build/status/GitHub/Nuget%20-%20AzureDevOpsMcp)](https://primeeagle.visualstudio.com/PrimeEagleX/_build/latest?definitionId=90)
+[![Build status](https://dev.azure.com/primeeagle/PrimeEagleX/_apis/build/status/GitHub/Nuget%20-%20AzureDevOpsMcp)](https://dev.azure.com/primeeagle/PrimeEagleX/_build/latest?definitionId=90)
 
 An Azure DevOps MCP Server built on .NET 10, providing **29 tools** covering project management, work items (read/write separation), Git operations, Pull Request reviews, CI/CD pipelines, and Sprint planning. Integrates with AI assistants (such as GitHub Copilot and Claude) via STDIO or HTTP (SSE) mode.
 
